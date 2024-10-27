@@ -11,6 +11,6 @@ hooks:
   #     runas: root
 
   ApplicationStart:
-    - location: /config/ssh/start_server.sh
+    - location: .ssh/start_server.sh
       timeout: 300
       runas: root
