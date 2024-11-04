@@ -1,45 +1,35 @@
-networks:
-  development_net:
-
 services:
-  db_server:
-    image: mariadb:10.5.9
-    container_name: '${APP_NAME}-db'
+  userDB:
+    image: postgres:16
+    container_name: vnbike-userdb
+    restart: always
+    env_file:
+      - .env
+    environment:
+      POSTGRES_USER: ${PG_USERNAME}
+      POSTGRES_PASSWORD: ${PG_PASSWORD}
+      POSTGRES_DB: ${PG_DBNAME}
+    ports:
+      - "${PG_DBPORT}:5432"
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+
+  it4DB:
+    image: mysql:8.3.0
+    container_name: it4today-db
     restart: always
     ports:
       - '${MYSQL_PORT}:3306'
+    env_file:
+      - .env
     environment:
-      MYSQL_ROOT_PASSWORD: '${MYSQL_ROOT_PASS}'
+      MYSQL_ROOT_PASSWORD: '${MYSQL_ROOT_PASSWORD}'
+      MYSQL_DATABASE: '${MYSQL_DATABASE}'
       MYSQL_USER: '${MYSQL_USER}'
-      MYSQL_PASSWORD: '${MYSQL_PASS}'
-      MYSQL_DATABASE: '${MYSQL_DB}'
+      MYSQL_PASSWORD: '${MYSQL_PASSWORD}'
     volumes:
-      - db_data:/var/lib/mysql
-      - ./mariadb/my.cnf:/etc/mysql/conf.d/my.cnf
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-u", "root", "--password=${MYSQL_ROOT_PASS}"]
-      interval: 50s
-      timeout: 10s
-      retries: 5
-    networks:
-      - development_net
-
-  db_admin:
-    image: phpmyadmin/phpmyadmin:5
-    container_name: '${APP_NAME}-phpmyadmin'
-    ports:
-      - '${APP_PHPMYADMIN_PORT}:80'
-    environment:
-      PMA_HOST: db_server
-    depends_on:
-      db_server:
-        condition: service_healthy
-    volumes:
-      - db_admin_data:/var/www/html
-    networks:
-      - development_net
+      - db-data:/var/lib/mysql
 
 volumes:
-  db_data:
-  db_admin_data:
-
+  pg-data:
+  db-data:
