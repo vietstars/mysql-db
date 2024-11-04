@@ -1,6 +1,6 @@
 cd /home/ubuntu
 
-cp -r .env.example .env
+sudo cp -r .env.example .env
 
-sudo docker compose down
-sudo docker compose up -d --build
+# sudo docker compose down
+# sudo docker compose up -d --build
